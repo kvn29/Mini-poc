@@ -1,0 +1,16 @@
+[
+    {
+        "key": "log",
+        "title": "info",
+        "icontype": "icon",
+        "icon": "fas fa-info",
+        "description": "Ce bloc vous permet d'afficher un message personnalisé dans la console. Particulièrement utile lors du développement de votre flux."
+    },
+    {
+        "key": "temp",
+        "title": "temporisation",
+        "icontype": "icon",
+        "icon": "far fa-clock",
+        "description": "Ce bloc vous permet de retarder une action et d'attendre un certain nombre de minutes ou d'heures."
+    }
+]
