@@ -3,20 +3,14 @@
         <div class="group">
             <label>MISC</label>
             <div>
-                <div class="item" data-opts='{"key": "log", "icon": "fas fa-info"}' @mouseover="over('log')" @mouseout="out()">
-                    <i class="fas fa-info"></i>
-                </div>
-                <div class="item" data-opts='{"key": "temp", "icon": "far fa-clock"}' @mouseover="over('temp')" @mouseout="out()">
-                    <i class="far fa-clock"></i>
-                </div>
-                <div class="item" data-opts='{"key": "clock", "icon": "fas fa-wallet"}'>
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <div class="item" data-opts='{"key": "clock", "icon": "fas fa-gift"}'>
-                    <i class="fas fa-gift"></i>
-                </div>
-                <div class="item" data-opts='{"key": "clock", "icon": "fas fa-balance-scale"}'>
-                    <i class="fas fa-balance-scale"></i>
+                <div class="item" v-for="item in miscGroup"
+                    :key="item.key"
+                    :data-key="item.key"
+                    @mouseover="over(item.key)"
+                    @mouseout="out(item.key)"
+                >
+                    <i v-if="item.icontype === 'icon'" :class="item.icon"></i>
+                    <span v-else>{{item.icontext}}</span>
                 </div>
             </div>
         </div>
@@ -39,6 +33,20 @@
                 </div>
                 <div class="item" data-opts='{"key": "sell", "text": "sell"}'>
                     <span>sell</span>
+                </div>
+            </div>
+        </div>
+        <div class="group">
+            <label>MARKET</label>
+            <div>
+                <div class="item" v-for="item in marketGroup"
+                    :key="item.key"
+                    :data-key="item.key"
+                    @mouseover="over(item.key)"
+                    @mouseout="out(item.key)"
+                >
+                    <i v-if="item.icontype === 'icon'" :class="item.icon"></i>
+                    <span v-else>{{item.icontext}}</span>
                 </div>
             </div>
         </div>
@@ -73,11 +81,21 @@
     </div>
 </template>
 <script>
+const informationsData = require("../assets/informations.json");
+
 export default {
     name: 'app-panel',
     data() {
         return {
-            
+            items: informationsData
+        }
+    },
+    computed: {
+        miscGroup() {
+            return this.items.filter(item => item.group === 'misc');
+        },
+        marketGroup() {
+            return this.items.filter(item => item.group === 'market');
         }
     },
     mounted() {
@@ -85,8 +103,8 @@ export default {
             appendTo: '#main',
             helper: 'clone',
             stop: (event, ui) => {
-                // console.log(event.target.dataset);
-                this.$parent.$refs.main.add(ui, JSON.parse(event.target.dataset.opts));
+                const itemData = informationsData.find(item => item.key === event.target.dataset.key);
+                this.$parent.$refs.main.add(ui, itemData);
             }
         });
     },
@@ -111,7 +129,7 @@ export default {
     height: calc(100% - 60px);
     background: white;
     position: absolute;
-    top: 60px;
+    top: 57px;
     left: 0px;
     border-right: 1px solid #CED4DA;
     padding: 0px 10px;

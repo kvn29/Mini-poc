@@ -1,29 +1,37 @@
 <template>
-<div>
-    <div id="main">
-        <!-- <simple-flowchart :scene.sync="data" :height="heightSvg"></simple-flowchart> -->
-    </div>
-    <div id="test">hello</div>
+    <div>
+        <div id="main" :class="{'graphOpened': graphOpened}"></div>
     </div>
 </template>
 <script>
-// const Popper = require('popper.js');
 export default {
     name: 'app-main',
     computed: {
         heightSvg() {
-            return window.innerHeight - 60
+            return window.innerHeight - 60;
         }
     },
     data() {
         return {
-            itemId: 0
+            graphOpened: false,
+            incrementItemId: 0,
+            flowchart: null,
+            flowDataStart: {"operators":{"0":{"top":20,"left":20,"properties":{"class":"flowchart-default-operator bloc-wallet","title":"<i class=\"fas fa-wallet\"></i>","inputs":{"input_1":{"label":"Input 1"}},"outputs":{"output_1":{"label":"Output 1"}}}}},"links":{},"operatorTypes":{}}
         }
     },
     methods: {
+        saveState() {
+            const data = this.flowchart.flowchart('getData');
+            localStorage.setItem('data-flow', JSON.stringify(data));
+        },
+        deleteState() {
+            localStorage.removeItem('data-flow');
+            this.flowchart.flowchart('setData', this.flowDataStart);
+        },
         add(event, opts) {
             const item = Object.assign(event.helper, {});
             const { top, left } = event.position;
+
             var operatorId = 'created_operator_' + this.itemId;
             var operatorData = {
                 top: top,
@@ -44,9 +52,11 @@ export default {
                 }
             };
             
-            this.itemId++;
-
-            $('#main').flowchart('createOperator', this.itemId, operatorData);
+            // this.incrementItemId++;
+            // this.flowchart.flowchart('createOperator', this.incrementItemId, operatorData);
+            const randomId = Math.floor(Math.random() * 10000000);
+            console.log('randomid', randomId);
+            this.flowchart.flowchart('createOperator', randomId, operatorData);
 
             
             let $placeholder = $('<div />').attr('class', 'placeholder');
@@ -74,13 +84,7 @@ export default {
                     popper.destroy();
                 })
             });
-            // $placeholder.hover(() => {
-            //     popper = new Popper($placeholder, $('#test'),{
-            //     placement: 'bottom',
-            // });
-            // }, () => {
-            //     popper.destroy();
-            // });
+
             $('.bloc-' + opts.key).off('over').on('mouseenter', () => {
                 this.$store.commit('setSelectedKey', opts.key);
                 this.$store.dispatch('getInformation');
@@ -91,44 +95,61 @@ export default {
                 if (popper) 
                     popper.update();
             })
+        },
+        initFlow() {
+            this.flowchart = $('#main');
+
+            const data = localStorage.getItem('data-flow') 
+                ? JSON.parse(localStorage.getItem('data-flow'))
+                : this.flowDataStart;
+            this.flowchart.flowchart({
+                data: data
+            });
+            // localStorage.getItem('data-flow') ? this.flowchart.flowchart({
+            //     data: JSON.parse(localStorage.getItem('data-flow'))
+            // }) : this.flowchart.flowchart();
         }
     },
     mounted() {
-        // this.$store.commit('setSelectedKey', 'log');
-        // this.$store.dispatch('getInformation');
-        // setTimeout(() => {
-        //     this.$store.commit('setSelectedKey', null);
-        //     this.$store.dispatch('getInformation');
-        // }, 2000);
-        $(document).ready(function() {
-            var data = {
-                operators: {
-                    operator: {
-                        top: 20,
-                        left: 20,
-                        properties: {
-                            title: '<i class="fas fa-wallet"></i>',
-                            inputs: {
-                                // input_1: {
-                                //     label: 'Input 1',
-                                // },
-                                // input_2: {
-                                //     label: 'Input 2',
-                                // }
-                            },
-                            outputs: {
-                                output_1: {
-                                    label: 'Output 10',
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-            $('#main').flowchart({
-                data: data
-            });
+        $(document).ready(() => {
+            this.initFlow();
         });
+        this.$store.dispatch('getTradeData');
+
+
+
+        const dataGraph = [23.45, 24.01, 24.05, 23.95, 23.50, 22.90, 22.10];
+
+        console.log(dataGraph);
+
+
+        const instructions = [
+            {type: 'log', text: 'Test'},
+            {type: 'budget', condition: {
+                lt: 24.00
+            }},
+            {type: 'log', text: 'END'}
+        ];
+
+
+
+        // const bot = (() => {
+            console.log(' -- START BOT -- ');
+        let index = 0;
+        let intervalBot = setInterval(function() {
+            console.log('interval', index);
+            
+            if (index < dataGraph.length) {
+                
+                
+                
+                index = ++index;
+            } else {
+                console.log('clear')
+                clearInterval(intervalBot);
+            }
+        }, 10);
+        // })()
     }
 }
 </script>
@@ -159,10 +180,13 @@ div.item {
     background-image: url('../assets/worn-dots.png');
     background-repeat: repeat;
     position: absolute;
-    top: 60px;
+    top: 57px;
     left: 100px;
     width: calc(100% - 100px);
     height: calc(100% - 60px);
+    &.graphOpened {
+        top: 357px;
+    }
     .flowchart-container {
         background: transparent;
         svg {

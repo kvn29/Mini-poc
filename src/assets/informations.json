@@ -1,5 +1,6 @@
 [
     {
+        "group": "misc",
         "key": "log",
         "title": "info",
         "icontype": "icon",
@@ -7,10 +8,59 @@
         "description": "Ce bloc vous permet d'afficher un message personnalisé dans la console. Particulièrement utile lors du développement de votre flux."
     },
     {
+        "group": "misc",
         "key": "temp",
         "title": "temporisation",
         "icontype": "icon",
         "icon": "far fa-clock",
         "description": "Ce bloc vous permet de retarder une action et d'attendre un certain nombre de minutes ou d'heures."
+    },
+    {
+        "group": "misc",
+        "key": "wallet",
+        "title": "Wallet",
+        "icontype": "icon",
+        "icon": "fas fa-wallet",
+        "description": "Ce bloc vous permet de retarder une action et d'attendre un certain nombre de minutes ou d'heures."
+    },
+    {
+        "group": "misc",
+        "key": "gift",
+        "title": "Gift",
+        "icontype": "icon",
+        "icon": "fas fa-gift",
+        "description": "Ce bloc vous permet de retarder une action et d'attendre un certain nombre de minutes ou d'heures."
+    },
+    {
+        "group": "misc",
+        "key": "balance-scale",
+        "title": "Balance",
+        "icontype": "icon",
+        "icon": "fas fa-balance-scale",
+        "description": "Ce bloc vous permet de retarder une action et d'attendre un certain nombre de minutes ou d'heures."
+    },
+    {
+        "group": "actions",
+        "key": "buy",
+        "title": "Buy",
+        "icontype": "text",
+        "icontext": "buy",
+        "description": "Ce bloc vous permet de retarder une action et d'attendre un certain nombre de minutes ou d'heures."
+    },
+    {
+        "group": "actions",
+        "key": "sell",
+        "title": "Sell",
+        "icontype": "text",
+        "icontext": "sell",
+        "description": "Ce bloc vous permet de retarder une action et d'attendre un certain nombre de minutes ou d'heures."
+    },
+    {
+        "group": "market",
+        "key": "price-tigger",
+        "title": "Déclencheur de prix",
+        "icontype": "icon",
+        "icon": "fas fa-dollar-sign",
+        "description": "Ce bloc est utilisé pour surveiller le prix de l'actif négocié. Il vous permet de déclencher la séquence de flux lorsque la condition (supérieure / inférieure) est remplie"
     }
 ]

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <app-header ref="header"/>
+    <app-graph ref="graph"/>
     <app-panel ref="panel"/>
     <app-main ref="main"/>
     <app-help ref="help"/>
@@ -11,13 +12,15 @@ import Header from './components/Header';
 import Main from './components/Main';
 import Panel from './components/Panel';
 import Help from './components/Help';
+import Graph from './components/Graph';
 
 export default {
   components: {
     [Header.name]: Header,
     [Main.name]: Main,
     [Panel.name]: Panel,
-    [Help.name]: Help
+    [Help.name]: Help,
+    [Graph.name]: Graph,
   }
 }
 </script>
