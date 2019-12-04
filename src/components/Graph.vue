@@ -3,6 +3,20 @@
         <div class="chart-container">
             <canvas id="chart"></canvas>
         </div>
+        <div class="graph-config">
+            <nav class="navbar">
+                <form class="form-inline my-2 my-lg-0">
+                    <b-form-select size="sm" class="my-sm-0" v-model="form.instrument" :options="options" disabled></b-form-select>
+                    <b-input-group size="sm" class="money" append="BTC">
+                        <b-form-input v-model="form.wallet.money1"  disabled></b-form-input>
+                    </b-input-group>
+                    <b-input-group size="sm" class="money" append="USD">
+                        <b-form-input v-model="form.wallet.money2"  disabled></b-form-input>
+                    </b-input-group>   
+                    <button class="btn btn-primary btn-sm my-2 my-sm-0" type="button" @click="launchStrategie();">Test</button>
+                </form>
+            </nav>
+        </div>
         <button class="togglePaneButton" @click="togglePane()">
             <i class="fas fa-chevron-down" v-if="!paneOpened"></i>
             <i class="fas fa-chevron-up" v-else></i>
@@ -17,19 +31,27 @@ export default {
     name: 'app-graph',
     data() {
         return {
-            paneOpened: false
+            paneOpened: false,
+            options: [
+                { value: 'BTC-USD', text: 'BTC / USD', disabled: true, selected: true }
+            ],
+            form: {
+                instrument: 'BTC-USD',
+                wallet: {
+                    money1: 10000,
+                    money2: 0
+                }
+            }
         }
     },
-    computed: {
-        // graphData() {
-        //     console.log(this.$store.state.tradeData);
-        //     return this.$store.state.tradeData;
-        // }
-    },
     methods: {
+        launchStrategie() {
+            console.log('start strategie')
+        },
         togglePane() {
             this.paneOpened = !this.paneOpened;
             this.$parent.$refs.main.graphOpened = this.paneOpened;
+            this.$parent.$refs.help.graphOpened = this.paneOpened;
         }
     },
     mounted() {
@@ -81,12 +103,20 @@ export default {
                             display:false
                         },
                         ticks: {
-                            display: false
+                            display: true,
+                            padding: 5,
+                            minRotation: 0,
+                            maxRotation: 0,
+                            autoSkip: true,
+                            autoSkipPadding: 20,
+                            callback: function(value, index, values) {
+                                return value.toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: 'numeric' });
+                            }
                         }
                     }],
                     yAxes: [{
                         ticks: {
-                            display: false,
+                            display: true,
                             beginAtZero: true
                         }
                     }]
@@ -104,7 +134,7 @@ export default {
     left:100px;
     z-index: 9;
     width: calc(100% - 100px);
-    height: 301px !important;
+    height: 361px !important;
     border-bottom: 1px solid #ced4da;
     &.opened {
         top: 57px;
@@ -113,6 +143,22 @@ export default {
         width: 100%;
         height: 300px !important;
         position: relative;
+    }
+    .graph-config {
+        background: white;
+        width: 100%;
+        height: 60px;
+        padding-top: 4px;
+        .form-inline {
+            & > * {
+                margin: 0 4px;
+            }
+        }
+        .money {
+            input[type='text'] {
+                width: 90px;
+            }
+        }
     }
     button.togglePaneButton {
         cursor: pointer;

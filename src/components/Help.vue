@@ -1,5 +1,5 @@
 <template>
-    <div id="help" v-if="help">
+    <div id="help" v-if="help" :class="{'graphOpened': graphOpened}">
         <div class="icon-selected">
             <i v-if="help.icontype === 'icon'" :class="help.icon"></i>
         </div>
@@ -12,6 +12,11 @@
 <script>
 export default {
     name: 'app-help',
+    data() {
+        return {
+            graphOpened: false
+        }
+    },
     computed: {
         help() {
             return this.$store.state.help;
@@ -22,7 +27,7 @@ export default {
 <style lang="scss">
 #help {
     position: absolute;
-    top: 90px;
+    top: 150px;
     right: 30px;
     border: 2px solid #2c3e50;
     background: #ffffff;
@@ -31,6 +36,9 @@ export default {
     padding: 16px 24px;
     border-radius: 6px;
     box-shadow: 0 0 50px 5px rgba(128,128,128,.1);
+    &.graphOpened {
+        top: 450px;
+    }
     h6 {
         margin-top:4px;
         text-transform: uppercase;

@@ -123,16 +123,18 @@ export default {
         console.log(dataGraph);
 
 
-        const instructions = [
-            {type: 'log', text: 'Test'},
+        const nodes = [
+            {type: 'log', text: 'Test', enabled: true},
+            {type: 'log', text: 'Test 2', enabled: true},
             {type: 'budget', condition: {
-                lt: 24.00
-            }},
-            {type: 'log', text: 'END'}
+                lt: 23.00
+            },  enabled: true},
+            {type: 'log', text: 'END', enabled: true}
         ];
+        let copyNodes = nodes;
 
 
-
+        console.group();
         // const bot = (() => {
             console.log(' -- START BOT -- ');
         let index = 0;
@@ -141,14 +143,55 @@ export default {
             
             if (index < dataGraph.length) {
                 
-                
+                if (copyNodes.length) {
+                    let instruction = copyNodes[0];
+                    // let instruction = copyNodes.shift();
+                    switch(instruction.type) {
+                        case 'log':
+                            console.log('LOG: ', instruction.text);
+                            copyNodes.shift();
+                            index = --index;
+                            // node.enabled = false;
+                        break;
+                        case 'budget':
+                            if (instruction.condition.lt) {
+                                if (dataGraph[index] < instruction.condition.lt) {
+                                    copyNodes.shift();
+                                    console.log('Budget lower than ', instruction.condition.lt, dataGraph[index]);
+                                }
+                            }
+                        break;
+                    }
+                }
+
+                // for (let i = 0, len = copyNodes.length; i < len; i++) {
+                //     let node = copyNodes[i];
+                //     if (node.enabled) {
+                //         switch(node.type) {
+                            // case 'log':
+                            //     console.log('LOG: ', node.text);
+                            //     node.enabled = false;
+                            // break;
+                //         }
+                //     }
+                // }
+                // copyNodes.map(node => {
+                //     if (node.enabled) {
+                //         switch(node.type) {
+                //             case 'log': 
+                //         }
+                //     }
+                // })
                 
                 index = ++index;
             } else {
                 console.log('clear')
                 clearInterval(intervalBot);
+                console.groupEnd();
             }
         }, 10);
+        
+
         // })()
     }
 }
@@ -180,12 +223,12 @@ div.item {
     background-image: url('../assets/worn-dots.png');
     background-repeat: repeat;
     position: absolute;
-    top: 57px;
+    top: 117px;
     left: 100px;
     width: calc(100% - 100px);
-    height: calc(100% - 60px);
+    height: calc(100% - 60px - 60px);
     &.graphOpened {
-        top: 357px;
+        top: 417px;
     }
     .flowchart-container {
         background: transparent;
