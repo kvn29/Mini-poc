@@ -68,6 +68,22 @@ export default {
         showLogs() {
             this.$parent.$refs.logs.opened = !this.$parent.$refs.logs.opened;
         },
+        drawDotAtIndex(index) {
+            const meta = this.chartCustom.getDatasetMeta(0);
+
+            const x = meta.data[index]._model.x;
+            const y = meta.data[index]._model.y;
+
+            let ctx = this.chartCustom.ctx;
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            ctx.fillStyle = '#007bff';
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#E9F4FF';
+            ctx.stroke();
+            ctx.closePath();
+        },
         stopStrategie() {
             clearInterval(this.interval);
             this.interval = null;
@@ -92,10 +108,13 @@ export default {
 
             const nodes = [
                 {type: 'log', text: 'Test', enabled: true},
-                {type: 'log', text: 'Test 2', enabled: true},
                 {type: 'budget', condition: {
-                    lt: 13500.00
-                },  enabled: true},
+                    gt: 17000
+                }},
+                // {type: 'log', text: 'Test 2', enabled: true},
+                // {type: 'budget', condition: {
+                //     lt: 13500.00
+                // },  enabled: true},
                 {type: 'log', text: 'END', enabled: true}
             ];
             let copyNodes = nodes;
@@ -107,7 +126,7 @@ export default {
             let index = 0;
             this.interval = setInterval(() => {
                 console.log('interval', index);
-                
+                 
                 if (index < dataGraph.length) {
                     
                     if (copyNodes.length) {
@@ -119,7 +138,8 @@ export default {
                                 copyNodes.shift();
                                 index = index !== 0 ? --index : 0;
                                 // this.logs = [...this.logs, {time: new Date().toLocaleString(), ...instruction}];
-                                this.log({time: new Date().toLocaleString(), ...instruction})
+                                this.log({time: new Date().toLocaleString(), ...instruction});
+                                this.drawDotAtIndex(index);
                                 // node.enabled = false;
                             break;
                             case 'budget':
@@ -128,7 +148,15 @@ export default {
                                         copyNodes.shift();
                                         console.log('Budget lower than ', instruction.condition.lt, dataGraph[index].y);
                                         // this.logs = [...this.logs, {time: new Date().toLocaleString(), ...instruction}];
-                                        this.log({time: new Date().toLocaleString(), ...instruction})
+                                        this.log({time: new Date().toLocaleString(), ...instruction});
+                                        this.drawDotAtIndex(index);
+                                    }
+                                } else if(instruction.condition.gt) {
+                                    if (dataGraph[index].y > instruction.condition.gt) {
+                                        copyNodes.shift();
+                                        console.log('Budget greater than', instruction.condition.gt, dataGraph[index].y);
+                                        this.log({time: new Date().toLocaleString(), ...instruction});
+                                        this.drawDotAtIndex(index);
                                     }
                                 }
                             break;
@@ -158,7 +186,8 @@ export default {
                     this.progression = Math.floor(index*100/dataGraph.length);
                     // this.
                     if (index < dataGraph.length) {
-                        this.showTooltipByIndex(0, index);
+                        // this.drawProgress(index);
+                        // this.showTooltipByIndex(0, index);
                     }
                 } else {
                     console.log('clear')
@@ -212,6 +241,8 @@ export default {
         }
     },
     mounted() {
+
+        
         // dev auto open
         // this.togglePane();
 

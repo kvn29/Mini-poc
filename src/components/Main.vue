@@ -4,6 +4,9 @@
     </div>
 </template>
 <script>
+import Vue from 'vue';
+import PopupLog from './Popups/Popup-Log';
+
 export default {
     name: 'app-main',
     computed: {
@@ -31,13 +34,13 @@ export default {
         add(event, opts) {
             const item = Object.assign(event.helper, {});
             const { top, left } = event.position;
-
+            const randomId = Math.floor(Math.random() * 10000000);
             var operatorId = 'created_operator_' + this.itemId;
             var operatorData = {
                 top: top,
                 left: left,
                 properties: {
-                    class: 'flowchart-default-operator bloc-' + opts.key,
+                    class: 'flowchart-default-operator bloc-' + opts.key + ' operator-' + randomId,
                     title: opts.text ? '<span>' + opts.text + '</span>' : '<i class="' + opts.icon + '"></i>',
                     inputs: {
                         input_1: {
@@ -54,38 +57,76 @@ export default {
             
             // this.incrementItemId++;
             // this.flowchart.flowchart('createOperator', this.incrementItemId, operatorData);
-            const randomId = Math.floor(Math.random() * 10000000);
             console.log('randomid', randomId);
             this.flowchart.flowchart('createOperator', randomId, operatorData);
 
             
-            let $placeholder = $('<div />').attr('class', 'placeholder');
-            $('.bloc-' + opts.key).append($placeholder);
-            let popper = null;
             
-            $placeholder.on('click', () => {
-                let $popupContainer = $('<div />').attr('class', 'popupcontainer').html('ici').appendTo('body');
-                popper = new Popper($('.bloc-' + opts.key), $popupContainer,{
-                    placement: 'right-start',
-                    modifiers: {
-                        arrow: {
-                            enabled: true,
-                        },
-                        flip: {
-                            behavior: ['right', 'bottom', 'top']
-                        },
-                        preventOverflow: {
-                            boundariesElement: document.querySelector('.flowchart-operators-layer')[0],
-                        },
-                    },
-                });
-                $popupContainer.on('click', () => {
-                    $popupContainer.remove();
-                    popper.destroy();
-                })
-            });
+            let popper = null;
 
-            $('.bloc-' + opts.key).off('over').on('mouseenter', () => {
+            let $popupContainer = $('<div />').attr({'class': 'popupcontainer', 'id': 'popup-'+randomId}).html('ici').appendTo('body');
+            popper = new Popper($('.operator-' + randomId), $popupContainer,{
+                placement: 'right-start',
+                modifiers: {
+                    arrow: {
+                        enabled: true,
+                    },
+                    flip: {
+                        behavior: ['right', 'bottom', 'top']
+                    },
+                    preventOverflow: {
+                        boundariesElement: document.querySelector('.flowchart-operators-layer')[0],
+                    },
+                },
+            });
+            popper.state.id = randomId;
+            
+
+            window.instancesPopper.push(popper);
+
+            const popupLog = Vue.extend(PopupLog);
+            const component = new popupLog({propsData: {
+                popupContainer: $popupContainer,
+                popper: popper
+            }}).$mount();
+            $popupContainer.html(component.$el);
+            // let self = this;
+            let $placeholder = $('<div />').attr('class', 'placeholder').data('unique', randomId).on('click', function() {
+                
+                const id = $placeholder.data('unique');
+                console.log(id);
+                
+                // window.instancesPopper.map()
+
+                if ($('div#popup-'+randomId).length === 1) {
+                    popper = new Popper($('.operator-' + randomId), $('div#popup-'+randomId),{
+                        placement: 'right-start',
+                        modifiers: {
+                            arrow: {
+                                enabled: true,
+                            },
+                            flip: {
+                                behavior: ['right', 'bottom', 'top']
+                            },
+                            preventOverflow: {
+                                boundariesElement: document.querySelector('.flowchart-operators-layer')[0],
+                            },
+                        },
+                    });
+                    popper.update();
+                    $('div#popup-'+randomId).show();
+                }
+
+
+
+                // $popupContainer.on('click', () => {
+                //     $popupContainer.remove();
+                //     popper.destroy();
+                // })
+            });
+            $('.operator-' + randomId).append($placeholder);
+
+            $('.operator-' + randomId).off('over').on('mouseenter', () => {
                 this.$store.commit('setSelectedKey', opts.key);
                 this.$store.dispatch('getInformation');
             }).off('mouseleave').on('mouseleave', () => {
@@ -111,6 +152,7 @@ export default {
         }
     },
     mounted() {
+        window.instancesPopper = [];
         $(document).ready(() => {
             this.initFlow();
         });
