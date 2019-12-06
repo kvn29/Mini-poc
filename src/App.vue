@@ -5,6 +5,7 @@
     <app-panel ref="panel"/>
     <app-main ref="main"/>
     <app-help ref="help"/>
+    <app-logs ref="logs"/>
   </div>
 </template>
 <script>
@@ -13,6 +14,7 @@ import Main from './components/Main';
 import Panel from './components/Panel';
 import Help from './components/Help';
 import Graph from './components/Graph';
+import Logs from './components/Logs';
 
 export default {
   components: {
@@ -21,6 +23,7 @@ export default {
     [Panel.name]: Panel,
     [Help.name]: Help,
     [Graph.name]: Graph,
+    [Logs.name]: Logs,
   }
 }
 </script>

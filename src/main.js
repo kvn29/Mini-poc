@@ -21,12 +21,13 @@ import Popper from 'popper.js';
 window.Popper = Popper;
 
 
-import { ToastPlugin, DropdownPlugin, FormSelectPlugin, InputGroupPlugin, FormInputPlugin } from 'bootstrap-vue'
+import { ToastPlugin, DropdownPlugin, FormSelectPlugin, InputGroupPlugin, FormInputPlugin, ModalPlugin } from 'bootstrap-vue'
 Vue.use(ToastPlugin);
 Vue.use(DropdownPlugin);
 Vue.use(FormSelectPlugin);
 Vue.use(InputGroupPlugin);
 Vue.use(FormInputPlugin);
+Vue.use(ModalPlugin);
 
 import './assets/custom.scss';
 

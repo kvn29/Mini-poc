@@ -12,8 +12,24 @@
                     </b-input-group>
                     <b-input-group size="sm" class="money" append="USD">
                         <b-form-input v-model="form.wallet.money2"  disabled></b-form-input>
-                    </b-input-group>   
-                    <button class="btn btn-primary btn-sm my-2 my-sm-0" type="button" @click="launchStrategie();">Test</button>
+                    </b-input-group>
+                    <button class="btn btn-primary btn-sm my-2 my-sm-0" type="button" @click="launchStrategie();" v-if="interval === null">Test</button>
+                    <button class="btn btn-warning btn-sm my-2 my-sm-0" type="button" @click="stopStrategie();" v-else>Stop</button>
+                    <span v-if="progression !== 0">{{progression}} %</span>
+                    <!-- <button v-b-modal.modal-log type="button">Launch demo modal</button> -->
+
+                    <!-- <b-modal id="modal-log" title="Journaux" modal-class="graph-log" dialog-class="graph-log-dialog" hide-backdrop no-close-on-backdrop>
+                        {{logs}}
+                        <table>
+                            <tr v-for="log in logs">
+                                <td class="time">{{log.time}}</td>
+                                <!-- <td class="log"></td> -->
+                            <!-- </tr> -->
+                        <!-- </table> -->
+                    <!-- </b-modal> -->
+                </form>
+                <form class="form-inline my-2 my-lg-0">
+                    <button class="btn btn-light btn-sm my-2 my-sm-0" type="button" @click="showLogs();">Journaux</button>
                 </form>
             </nav>
         </div>
@@ -25,13 +41,17 @@
 </template>
 <script>
 import Chart from 'chart.js';
-import graphData from '../../public/BTC-ETH-hour.json';
+import jsonGraphData from '../../public/BTC-ETH-hour.json';
 
 export default {
     name: 'app-graph',
     data() {
         return {
+            chartCustom: null,
+            progression: 0,
+            interval: null,
             paneOpened: false,
+            logs: [],
             options: [
                 { value: 'BTC-USD', text: 'BTC / USD', disabled: true, selected: true }
             ],
@@ -45,29 +65,169 @@ export default {
         }
     },
     methods: {
+        showLogs() {
+            this.$parent.$refs.logs.opened = !this.$parent.$refs.logs.opened;
+        },
+        stopStrategie() {
+            clearInterval(this.interval);
+            this.interval = null;
+            this.progression = 0;
+            this.closeTip();
+        },
         launchStrategie() {
-            console.log('start strategie')
+            console.log('start strategie');
+            this.progression = 0;
+            this.logs = [];
+            const dataGraph = jsonGraphData.data.map(item => {
+                return {
+                    t: new Date(item[0]),
+                    y: item[1],
+                }
+            });
+
+            // const dataGraph = [23.45, 24.01, 24.05, 23.95, 23.50, 22.90, 22.10];
+
+            console.log(dataGraph);
+
+
+            const nodes = [
+                {type: 'log', text: 'Test', enabled: true},
+                {type: 'log', text: 'Test 2', enabled: true},
+                {type: 'budget', condition: {
+                    lt: 13500.00
+                },  enabled: true},
+                {type: 'log', text: 'END', enabled: true}
+            ];
+            let copyNodes = nodes;
+
+
+            console.group();
+            // const bot = (() => {
+                console.log(' -- START BOT -- ');
+            let index = 0;
+            this.interval = setInterval(() => {
+                console.log('interval', index);
+                
+                if (index < dataGraph.length) {
+                    
+                    if (copyNodes.length) {
+                        let instruction = copyNodes[0];
+                        // let instruction = copyNodes.shift();
+                        switch(instruction.type) {
+                            case 'log':
+                                console.log('LOG: ', instruction.text);
+                                copyNodes.shift();
+                                index = index !== 0 ? --index : 0;
+                                // this.logs = [...this.logs, {time: new Date().toLocaleString(), ...instruction}];
+                                this.log({time: new Date().toLocaleString(), ...instruction})
+                                // node.enabled = false;
+                            break;
+                            case 'budget':
+                                if (instruction.condition.lt) {
+                                    if (dataGraph[index].y < instruction.condition.lt) {
+                                        copyNodes.shift();
+                                        console.log('Budget lower than ', instruction.condition.lt, dataGraph[index].y);
+                                        // this.logs = [...this.logs, {time: new Date().toLocaleString(), ...instruction}];
+                                        this.log({time: new Date().toLocaleString(), ...instruction})
+                                    }
+                                }
+                            break;
+                        }
+                    }
+
+                    // for (let i = 0, len = copyNodes.length; i < len; i++) {
+                    //     let node = copyNodes[i];
+                    //     if (node.enabled) {
+                    //         switch(node.type) {
+                                // case 'log':
+                                //     console.log('LOG: ', node.text);
+                                //     node.enabled = false;
+                                // break;
+                    //         }
+                    //     }
+                    // }
+                    // copyNodes.map(node => {
+                    //     if (node.enabled) {
+                    //         switch(node.type) {
+                    //             case 'log': 
+                    //         }
+                    //     }
+                    // })
+                    
+                    index = ++index;
+                    this.progression = Math.floor(index*100/dataGraph.length);
+                    // this.
+                    if (index < dataGraph.length) {
+                        this.showTooltipByIndex(0, index);
+                    }
+                } else {
+                    console.log('clear')
+                    clearInterval(this.interval);
+                    this.stopStrategie();
+                    console.groupEnd();
+                }
+            }, 2);
         },
         togglePane() {
             this.paneOpened = !this.paneOpened;
             this.$parent.$refs.main.graphOpened = this.paneOpened;
             this.$parent.$refs.help.graphOpened = this.paneOpened;
+        },
+        showTooltipByIndex(datasetIndex, pointIndex) {
+            this.chartCustom.tooltip._active = []
+            var activeElements = this.chartCustom.tooltip._active;
+            var requestedElem = this.chartCustom.getDatasetMeta(datasetIndex).data[pointIndex];
+            for(var i = 0; i < activeElements.length; i++) {
+                if(requestedElem._index == activeElements[i]._index)  
+                    return;
+            }
+            activeElements.push(requestedElem);
+            this.chartCustom.tooltip._active = activeElements;
+            this.chartCustom.tooltip.update(true);
+            this.chartCustom.draw();
+        },
+        closeTip(datasetIndex, pointIndex){
+            var activeElements = this.chartCustom.tooltip._active;
+            if(activeElements == undefined || activeElements.length == 0)
+                return;
+            
+            if(!datasetIndex) {
+                this.chartCustom.tooltip._active = [];
+            } else {
+                var requestedElem = this.chartCustom.getDatasetMeta(datasetIndex).data[pointIndex];
+                // Si on veut supprimer une tooltip ou bien toute
+                for(var i = 0; i < activeElements.length; i++) {
+                    if(requestedElem._index == activeElements[i]._index)  {
+                        activeElements.splice(i, 1);
+                        break;
+                    }
+                }
+                this.chartCustom.tooltip._active = activeElements;
+            }
+            this.chartCustom.tooltip.update(true);
+            this.chartCustom.draw();
+        },
+        log(args) {
+            this.$parent.$refs.logs.add(args);
         }
     },
     mounted() {
-        const data = graphData.data.map(item => {
+        // dev auto open
+        // this.togglePane();
+
+        const data = jsonGraphData.data.map(item => {
             return {
                 t: new Date(item[0]),
                 y: item[1],
             }
         });
-        const labels = graphData.data.map(item => {
+        const labels = jsonGraphData.data.map(item => {
             return new Date(item[0])
         });
         console.log(data);
-
+        
         var ctx = document.getElementById('chart').getContext('2d');
-        var myChart = new Chart(ctx, {
+        this.chartCustom = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
@@ -80,14 +240,6 @@ export default {
                     backgroundColor: 'rgba(38, 143, 255, 0.1)',
                 }]
             },
-            // data: {
-            //     labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            //     datasets: [{
-            //         label: '# of Votes',
-            //         data: [12, 19, 3, 5, 2, 3],
-            //         borderWidth: 1
-            //     }]
-            // },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -178,4 +330,5 @@ export default {
         }
     }
 }
+
 </style>

@@ -118,78 +118,78 @@ export default {
 
 
 
-        const dataGraph = [23.45, 24.01, 24.05, 23.95, 23.50, 22.90, 22.10];
+        // const dataGraph = [23.45, 24.01, 24.05, 23.95, 23.50, 22.90, 22.10];
 
-        console.log(dataGraph);
-
-
-        const nodes = [
-            {type: 'log', text: 'Test', enabled: true},
-            {type: 'log', text: 'Test 2', enabled: true},
-            {type: 'budget', condition: {
-                lt: 23.00
-            },  enabled: true},
-            {type: 'log', text: 'END', enabled: true}
-        ];
-        let copyNodes = nodes;
+        // console.log(dataGraph);
 
 
-        console.group();
-        // const bot = (() => {
-            console.log(' -- START BOT -- ');
-        let index = 0;
-        let intervalBot = setInterval(function() {
-            console.log('interval', index);
+        // const nodes = [
+        //     {type: 'log', text: 'Test', enabled: true},
+        //     {type: 'log', text: 'Test 2', enabled: true},
+        //     {type: 'budget', condition: {
+        //         lt: 23.00
+        //     },  enabled: true},
+        //     {type: 'log', text: 'END', enabled: true}
+        // ];
+        // let copyNodes = nodes;
+
+
+        // console.group();
+        // // const bot = (() => {
+        //     console.log(' -- START BOT -- ');
+        // let index = 0;
+        // let intervalBot = setInterval(function() {
+        //     console.log('interval', index);
             
-            if (index < dataGraph.length) {
+        //     if (index < dataGraph.length) {
                 
-                if (copyNodes.length) {
-                    let instruction = copyNodes[0];
-                    // let instruction = copyNodes.shift();
-                    switch(instruction.type) {
-                        case 'log':
-                            console.log('LOG: ', instruction.text);
-                            copyNodes.shift();
-                            index = --index;
-                            // node.enabled = false;
-                        break;
-                        case 'budget':
-                            if (instruction.condition.lt) {
-                                if (dataGraph[index] < instruction.condition.lt) {
-                                    copyNodes.shift();
-                                    console.log('Budget lower than ', instruction.condition.lt, dataGraph[index]);
-                                }
-                            }
-                        break;
-                    }
-                }
+        //         if (copyNodes.length) {
+        //             let instruction = copyNodes[0];
+        //             // let instruction = copyNodes.shift();
+        //             switch(instruction.type) {
+        //                 case 'log':
+        //                     console.log('LOG: ', instruction.text);
+        //                     copyNodes.shift();
+        //                     index = --index;
+        //                     // node.enabled = false;
+        //                 break;
+        //                 case 'budget':
+        //                     if (instruction.condition.lt) {
+        //                         if (dataGraph[index] < instruction.condition.lt) {
+        //                             copyNodes.shift();
+        //                             console.log('Budget lower than ', instruction.condition.lt, dataGraph[index]);
+        //                         }
+        //                     }
+        //                 break;
+        //             }
+        //         }
 
-                // for (let i = 0, len = copyNodes.length; i < len; i++) {
-                //     let node = copyNodes[i];
-                //     if (node.enabled) {
-                //         switch(node.type) {
-                            // case 'log':
-                            //     console.log('LOG: ', node.text);
-                            //     node.enabled = false;
-                            // break;
-                //         }
-                //     }
-                // }
-                // copyNodes.map(node => {
-                //     if (node.enabled) {
-                //         switch(node.type) {
-                //             case 'log': 
-                //         }
-                //     }
-                // })
+        //         // for (let i = 0, len = copyNodes.length; i < len; i++) {
+        //         //     let node = copyNodes[i];
+        //         //     if (node.enabled) {
+        //         //         switch(node.type) {
+        //                     // case 'log':
+        //                     //     console.log('LOG: ', node.text);
+        //                     //     node.enabled = false;
+        //                     // break;
+        //         //         }
+        //         //     }
+        //         // }
+        //         // copyNodes.map(node => {
+        //         //     if (node.enabled) {
+        //         //         switch(node.type) {
+        //         //             case 'log': 
+        //         //         }
+        //         //     }
+        //         // })
                 
-                index = ++index;
-            } else {
-                console.log('clear')
-                clearInterval(intervalBot);
-                console.groupEnd();
-            }
-        }, 10);
+        //         index = ++index;
+        //     } else {
+        //         console.log('clear')
+        //         clearInterval(intervalBot);
+        //         console.groupEnd();
+        //     }
+        // }, 10);
         
 
         // })()
